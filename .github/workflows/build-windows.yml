@@ -1,0 +1,57 @@
+name: Build Windows App
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Build ToN Pin System
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          New-Item -ItemType Directory -Force -Path ".\dist" | Out-Null
+
+          dotnet publish ".\ToNPinSystem\ToNPinSystem.csproj" `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -o ".\dist"
+
+          if (Test-Path ".\ToNPinSystem\Maps") {
+            New-Item -ItemType Directory -Force -Path ".\dist\data\Maps" | Out-Null
+            Copy-Item ".\ToNPinSystem\Maps\*" ".\dist\data\Maps\" -Recurse -Force
+          }
+
+          @"
+          ToN Pin System
+
+          Start:
+          Double-click "ToN Pin System.exe"
+
+          Do not delete the data folder.
+          "@ | Set-Content ".\dist\README.txt" -Encoding UTF8
+
+      - name: Create ZIP
+        shell: pwsh
+        run: |
+          Compress-Archive -Path ".\dist\*" -DestinationPath ".\ToN-Pin-System-Windows-x64.zip" -Force
+
+      - name: Upload finished app
+        uses: actions/upload-artifact@v4
+        with:
+          name: ToN-Pin-System-Windows-x64
+          path: ToN-Pin-System-Windows-x64.zip
