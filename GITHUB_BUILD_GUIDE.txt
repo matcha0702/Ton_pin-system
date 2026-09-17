@@ -1,0 +1,16 @@
+﻿ToN Pin System - GitHub自動ビルド
+
+1. このZIPの中身をGitHubリポジトリのルートへアップロード/置換します。
+2. GitHubで Actions タブを開きます。
+3. 左側の「Build Windows App」を開きます。
+4. 「Run workflow」→「Run workflow」を押します。
+5. 完了して緑のチェックになった実行を開きます。
+6. Artifacts の「ToN-Pin-System-Windows-x64」をダウンロードします。
+7. ダウンロードしたArtifactの中の ToN-Pin-System-Windows-x64.zip が配布用です。
+
+配布されるZIP:
+  ToN Pin System.exe
+  README.txt
+  data/Maps/...
+
+利用者側に .NET SDK、build-release.bat、ソースコードは不要です。
